@@ -77,6 +77,10 @@ def refresh():
             label = Label(frame4, width=12, text=sub_list[0][i],
                           font=('', 12), fg=font_color, borderwidth=0)
             label.grid(row=s, column=c, padx=12, pady=(2, 0))
+            if c == 0:
+                label.grid(padx=(14, 12))
+            if c == d-1:
+                label.grid(padx=(12, 14))
             label = Label(frame4, width=12, text=sub_list[2][i] + '명 ' + sub_list[4][i] + '%',
                           font=('', 12), fg=font_color, borderwidth=0)
             label.grid(row=s+1, column=c)
@@ -105,6 +109,10 @@ def refresh():
             label = Label(frame5, width=12, text=sub_list[0][i],
                           font=('', 12), fg=font_color, borderwidth=0)
             label.grid(row=s, column=c, padx=12, pady=(2, 0))
+            if c == 0:
+                label.grid(padx=(14, 12))
+            if c == d-1:
+                label.grid(padx=(12, 14))
             label = Label(frame5, width=12, text=sub_list[1][i] + '명 ' + sub_list[3][i] + '%',
                           font=('', 12), fg=font_color, borderwidth=0)
             label.grid(row=s+1, column=c)
@@ -144,9 +152,13 @@ def refresh():
                 text3 = sub_list[2][i] + '명'
             else:
                 text3 = ''
-            label = Label(frame6, width=9, text=text1,
+            label = Label(frame6, width=8, text=text1,
                           font=('', 12), height=1, borderwidth=0)
-            label.grid(row=s, column=c, pady=(6, 0))
+            label.grid(row=s, column=c, padx=1, pady=(6, 0))
+            if c == 0:
+                label.grid(padx=(5, 1))
+            if c == d-1:
+                label.grid(padx=(1, 5))
             label = Label(frame6, width=9, text=text2,
                           font=('', 9), height=1, borderwidth=0)
             label.grid(row=s + 1, column=c)
