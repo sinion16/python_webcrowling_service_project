@@ -183,7 +183,7 @@ def refresh(page=0, seoul_list=[], naver_list=[]):
             c = c + 1
 
     def reload_0():
-        refresh(0, request('seoul'), naver_list)
+        refresh(0, request('seoul'), request('seoul'))
 
     def page_1():
         refresh(1, seoul_list, naver_list)
@@ -194,7 +194,8 @@ def refresh(page=0, seoul_list=[], naver_list=[]):
         webbrowser.open_new(url)
 
     def start_set(start):
-        print('start', start)
+        print(str(start) + 'page')
+        frame7.config(text=' 코로나 관련 뉴스 - 현재 [{}] 페이지'.format(start))
         refresh(1, seoul_list, request('naver', start))
 
     def reload_1():
