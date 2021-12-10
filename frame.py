@@ -3,10 +3,7 @@
 import tkinter
 from tkinter import *
 import crawling
-
-
-global page
-page = 0
+import webbrowser
 
 
 def view():
@@ -19,11 +16,27 @@ def hide():
     frame4.pack_forget()
     frame5.pack_forget()
     frame6.pack_forget()
+    frame7.pack_forget()
 
 
-def refresh():
-    global page
+def request(site, start=0):
+    if site == 'seoul':
+        seoul_list = crawling.seoul()
+        # for i in range(len(seoul_list[0])):
+        #     print(seoul_list[0][i])
+        # print(seoul_list[1])
+        return seoul_list
+    if site == 'naver':
+        naver_list = crawling.naver(start)
+        # for i in range(len(naver_list[0])):
+        #     print(naver_list[0][i])
+        # print(naver_list[1])
+        return naver_list
 
+
+def refresh(page=0, seoul_list=[], naver_list=[]):
+
+    # seoul sub def ========================= #
     def color(num_list, num):
         num_rank = sorted(num_list)
         rank = num_rank.index(num_list[num])
@@ -65,7 +78,7 @@ def refresh():
         frame4.pack()
         button1_1.config(text='돌아가기', command=back)
 
-        sub_list = list[0][2]
+        sub_list = seoul_list[0][2]
         d = 4
         c = 0
         s = 0
@@ -87,7 +100,7 @@ def refresh():
             if i == len(sub_list[0])-1:
                 label = Label(frame4, width=12, text='총 합', font=('', 12), borderwidth=0)
                 label.grid(row=s, column=c+1, padx=12, pady=(2, 0))
-                label = Label(frame4, width=12, text=list[0][0][0][0] + '명', font=('', 12), borderwidth=0)
+                label = Label(frame4, width=12, text=seoul_list[0][0][0][0] + '명', font=('', 12), borderwidth=0)
                 label.grid(row=s+1, column=c+1, padx=12, pady=(0, 4))
             c = c + 1
 
@@ -96,7 +109,7 @@ def refresh():
         frame5.pack()
         button1_1.config(text='돌아가기', command=back)
 
-        sub_list = list[0][2]
+        sub_list = seoul_list[0][2]
 
         d = 4
         c = 0
@@ -119,7 +132,7 @@ def refresh():
             if i == len(sub_list[0])-1:
                 label = Label(frame5, width=12, text='총 합', font=('', 12), borderwidth=0)
                 label.grid(row=s, column=c+1, padx=12, pady=(2, 0))
-                label = Label(frame5, width=12, text=list[0][0][0][1] + '명', font=('', 12), borderwidth=0)
+                label = Label(frame5, width=12, text=seoul_list[0][0][0][1] + '명', font=('', 12), borderwidth=0)
                 label.grid(row=s+1, column=c+1, padx=12, pady=(0, 4))
             c = c + 1
 
@@ -128,7 +141,7 @@ def refresh():
         frame6.pack()
         button1_1.config(text='돌아가기', command=back)
 
-        sub_list = list[0][5]
+        sub_list = seoul_list[0][5]
 
         d = 7
         c = 0
@@ -139,7 +152,7 @@ def refresh():
                 s = s + 3
 
             if sub_list[0][i] == '1':
-                text1 = list[1][2][1] + '. ' + sub_list[0][i] + '.'
+                text1 = seoul_list[1][2][1] + '. ' + sub_list[0][i] + '.'
             elif sub_list[0][i] != '':
                 text1 = sub_list[0][i] + '.'
             else:
@@ -169,23 +182,48 @@ def refresh():
                 label.grid(pady=(0, 10))
             c = c + 1
 
-    button1_1.config(text='새로고침')
+    def reload_0():
+        refresh(0, request('seoul'), naver_list)
 
+    def page_1():
+        refresh(1, seoul_list, naver_list)
+    # ======================================= #
+
+    # naver sub def ========================= #
+    def callback(url):
+        webbrowser.open_new(url)
+
+    def start_set(start):
+        print('start', start)
+        refresh(1, seoul_list, request('naver', start))
+
+    def reload_1():
+        refresh(1, seoul_list, request('naver'))
+
+    def page_0():
+        refresh(0, seoul_list, naver_list)
+    # ======================================= #
+
+    if len(seoul_list) == 0:
+        seoul_list = request('seoul')
+        naver_list = request('naver')
+
+    hide()
     if page == 0:
-        hide()
         frame2.pack()
         frame3.pack()
+
+        button1_1.config(text='새로고침', command=reload_0)
+        button1_2.config(text='관련뉴스', command=page_1)
         button1_3.config(command=click1_3)
 
-        list = crawling.seoul()
-        # for i in range(len(list[0])):
-        #     print(list[0][i])
-        # print(list[1])
+        label1_1.config(text=naver_list[0][0][:30], font=('', 12, 'underline'), fg='#287bde')
+        label1_1.bind("<Button-1>", lambda e: callback(naver_list[1][0]))
 
-        seoul = list[0][0]
-        korea = list[0][1]
+        seoul = seoul_list[0][0]
+        korea = seoul_list[0][1]
 
-        label = Label(frame2, text=list[1][0])
+        label = Label(frame2, text=seoul_list[1][0])
         label.grid(row=0, column=0, columnspan=len(seoul[0]))
         for i in range(0, len(seoul)):
             for j in range(0, len(seoul[0])):
@@ -200,7 +238,7 @@ def refresh():
                     label = Label(frame2, text=seoul[i][j])
                     label.grid(row=i+1, column=j, padx=3, pady=(3, 30))
 
-        label = Label(frame3, text=list[1][1])
+        label = Label(frame3, text=seoul_list[1][1])
         label.grid(row=0, column=0, columnspan=len(korea[0]))
         for i in range(0, len(korea)):
             for j in range(0, len(korea[0])):
@@ -212,6 +250,78 @@ def refresh():
                 else:
                     label = Label(frame3, text=korea[i][j])
                     label.grid(row=i+1, column=j, padx=3, pady=(3, 30))
+    if page == 1:
+        frame7.pack()
+
+        button1_1.config(text='새로고침', command=reload_1)
+        button1_2.config(text='메인으로', command=page_0)
+
+        widget_list = frame7.grid_slaves()
+        for i in widget_list:
+            i.destroy()
+
+        # 나중에 제대로
+        label = Label(frame7, width=44, text=naver_list[0][0][:30], font=('', 12, 'underline'), fg='#287bde', bg='white', relief='sunken')
+        label.grid(row=0, column=0, padx=69, pady=(10, 0))
+        label.bind("<Button-1>", lambda e: callback(naver_list[1][0]))
+        label = Label(frame7, width=44, text=naver_list[0][1][:30], font=('', 12, 'underline'), fg='#287bde', bg='white', relief='sunken')
+        label.grid(row=1, column=0)
+        label.bind("<Button-1>", lambda e: callback(naver_list[1][1]))
+        label = Label(frame7, width=44, text=naver_list[0][2][:30], font=('', 12, 'underline'), fg='#287bde', bg='white', relief='sunken')
+        label.grid(row=2, column=0)
+        label.bind("<Button-1>", lambda e: callback(naver_list[1][2]))
+        label = Label(frame7, width=44, text=naver_list[0][3][:30], font=('', 12, 'underline'), fg='#287bde', bg='white', relief='sunken')
+        label.grid(row=3, column=0)
+        label.bind("<Button-1>", lambda e: callback(naver_list[1][3]))
+        label = Label(frame7, width=44, text=naver_list[0][4][:30], font=('', 12, 'underline'), fg='#287bde', bg='white', relief='sunken')
+        label.grid(row=4, column=0)
+        label.bind("<Button-1>", lambda e: callback(naver_list[1][4]))
+        label = Label(frame7, width=44, text=naver_list[0][5][:30], font=('', 12, 'underline'), fg='#287bde', bg='white', relief='sunken')
+        label.grid(row=5, column=0)
+        label.bind("<Button-1>", lambda e: callback(naver_list[1][5]))
+        label = Label(frame7, width=44, text=naver_list[0][6][:30], font=('', 12, 'underline'), fg='#287bde', bg='white', relief='sunken')
+        label.grid(row=6, column=0)
+        label.bind("<Button-1>", lambda e: callback(naver_list[1][6]))
+        label = Label(frame7, width=44, text=naver_list[0][7][:30], font=('', 12, 'underline'), fg='#287bde', bg='white', relief='sunken')
+        label.grid(row=7, column=0)
+        label.bind("<Button-1>", lambda e: callback(naver_list[1][7]))
+        label = Label(frame7, width=44, text=naver_list[0][8][:30], font=('', 12, 'underline'), fg='#287bde', bg='white', relief='sunken')
+        label.grid(row=8, column=0)
+        label.bind("<Button-1>", lambda e: callback(naver_list[1][8]))
+        label = Label(frame7, width=44, text=naver_list[0][9][:30], font=('', 12, 'underline'), fg='#287bde', bg='white', relief='sunken')
+        label.grid(row=9, column=0, pady=(0, 9))
+        label.bind("<Button-1>", lambda e: callback(naver_list[1][9]))
+
+        button_frame = Frame(frame7)
+        button_frame.grid(row=10, column=0, pady=(0, 9))
+
+        button = Button(button_frame, text='1', borderwidth=0)
+        button.grid(row=0, column=1, padx=5)
+        button.config(command=lambda: start_set(1))
+        button = Button(button_frame, text='2', borderwidth=0)
+        button.grid(row=0, column=2, padx=5)
+        button.config(command=lambda: start_set(2))
+        button = Button(button_frame, text='3', borderwidth=0)
+        button.grid(row=0, column=3, padx=5)
+        button.config(command=lambda: start_set(3))
+        button = Button(button_frame, text='4', borderwidth=0)
+        button.grid(row=0, column=4, padx=5)
+        button.config(command=lambda: start_set(4))
+        button = Button(button_frame, text='5', borderwidth=0)
+        button.grid(row=0, column=5, padx=5)
+        button.config(command=lambda: start_set(5))
+        button = Button(button_frame, text='6', borderwidth=0)
+        button.grid(row=0, column=6, padx=5)
+        button.config(command=lambda: start_set(6))
+        button = Button(button_frame, text='7', borderwidth=0)
+        button.grid(row=0, column=7, padx=5)
+        button.config(command=lambda: start_set(7))
+        button = Button(button_frame, text='8', borderwidth=0)
+        button.grid(row=0, column=8, padx=5)
+        button.config(command=lambda: start_set(8))
+        button = Button(button_frame, text='9', borderwidth=0)
+        button.grid(row=0, column=8, padx=5)
+        button.config(command=lambda: start_set(9))
 
 
 tk = Tk()
@@ -226,14 +336,14 @@ master_frame.pack()
 frame1 = Frame(master_frame)
 frame1.pack()
 
-button1_1 = Button(frame1, width=6, text='새로고침', font=('', 10), command=refresh)
-label1_1 = Label(frame1, width=42, text='뉴스제목', font=('', 12), bg='white', relief='sunken')
-button1_2 = Button(frame1, width=6, text='더 보 기', font=('', 10), command='')
+button1_1 = Button(frame1, width=6, text='새로고침', font=('', 10))
+label1_1 = Label(frame1, width=44, text='기사 제목', bg='white', relief='sunken')
+button1_2 = Button(frame1, width=6, font=('', 10))
 button1_3 = Button(frame1, width=9, text='코로나 달력', font=('', 10))
-button1_1.grid(row=0, column=0, padx=(40, 10), pady=(28, 12))
-label1_1.grid(row=0, column=1, pady=(28, 12))
-button1_2.grid(row=0, column=2, padx=(10, 40), pady=(28, 12))
-button1_3.grid(row=1, column=0, columnspan=3, padx=(10, 40), sticky='e')
+button1_1.grid(row=0, column=0, padx=(28, 10), pady=(28, 12), sticky='w')
+label1_1.grid(row=0, column=1, pady=(28, 12), sticky='we')
+button1_2.grid(row=0, column=2, padx=(10, 28), pady=(28, 12), sticky='e')
+button1_3.grid(row=1, column=0, columnspan=3, padx=(10, 28), sticky='e')
 
 
 frame2 = LabelFrame(master_frame, text=' 서울시 코로나 발생동향 ', labelanchor='n', font=('', 12))
@@ -251,6 +361,10 @@ frame5 = LabelFrame(master_frame, text=' 지역별 확진자 발생인원/비율
 
 
 frame6 = LabelFrame(master_frame, text=' 날짜별 확진자 발생인원 ', labelanchor='n', font=('', 12))
+
+
+frame7 = LabelFrame(master_frame, text=' 코로나 관련 뉴스 ', labelanchor='n', font=('', 12))
+
 
 refresh()
 tk.mainloop()

@@ -4,29 +4,30 @@ import bs4
 import urllib.request
 from tkinter import *
 from tkinter import ttk
-
-
-# def refresh(site, start=1):
-#     if site == 'seoul' or site == 'all':
-#         url = 'https://www.seoul.go.kr/coronaV/coronaStatus.do'
-#         web_page = urllib.request.urlopen(url)
-#         result = bs4.BeautifulSoup(web_page, 'html.parser')
-#         return result
-#     if site == 'naver' or site == 'all':
-#         url = 'https://search.naver.com/search.naver?where=news&query=%EC%BD%94%EB%A1%9C%EB%82%98&start=' + str(start) + '1'
-#         web_page = urllib.request.urlopen(url)
-#         result = bs4.BeautifulSoup(web_page, 'html.parser')
-#         return result
+import numpy as np
 import analysis
+import common.oracle_controller as oracle
+
+
+def refresh(site, start=0):
+    if site == 'seoul' or site == 'all':
+        url = 'https://www.seoul.go.kr/coronaV/coronaStatus.do'
+        web_page = urllib.request.urlopen(url)
+        result = bs4.BeautifulSoup(web_page, 'html.parser')
+        return result
+    if site == 'naver' or site == 'all':
+        url = 'https://search.naver.com/search.naver?where=news&query=%EC%BD%94%EB%A1%9C%EB%82%98&start=' + str(start) + '1'
+        web_page = urllib.request.urlopen(url)
+        result = bs4.BeautifulSoup(web_page, 'html.parser')
+        return result
 
 
 def seoul():
-    # 데이터 크롤링 ====================================== #
-
-    # result = refresh('seoul')
-    url = 'https://www.seoul.go.kr/coronaV/coronaStatus.do'
-    web_page = urllib.request.urlopen(url)
-    result = bs4.BeautifulSoup(web_page, 'html.parser')
+    print('seoul crawling...')
+    result = refresh('seoul')
+    # url = 'https://www.seoul.go.kr/coronaV/coronaStatus.do'
+    # web_page = urllib.request.urlopen(url)
+    # result = bs4.BeautifulSoup(web_page, 'html.parser')
 
     list_a = []
     list_b = []
@@ -153,6 +154,7 @@ def seoul():
         selector = result.select_one('div.clndar_option-Wrap > div > h5 > span:nth-child(' + str(i + 1) + ')').text
         list_t.append(selector)
     list_b.append(list_t)
+    print('seoul crawling Ok')
     # ================================================== #
 
     # 데이터 분석/가공 ==================================== #
@@ -164,11 +166,51 @@ def seoul():
     # ================================================== #
 
     # 데이터 저장(db) ==================================== #
-
+    oracle.database([list_a, list_b])
     # ================================================== #
-    for i in range(0, len(list_a)):
-        for j in range(0, len(list_a[i])):
-            print('0 :', i, ':', j, list_a[i][j])
-    print('1 : 0 : 0', list_b)
+    # for i in range(0, len(list_a)):
+    #     for j in range(0, len(list_a[i])):
+    #         print('0 :', i, ':', j, list_a[i][j])
+    # print('1 : 0 : 0', list_b)
 
     return list_a, list_b
+
+
+def naver(start=0):
+    print('naver crawling...')
+    all_titles = []
+    all_urls = []
+
+    res = refresh('naver', start)
+
+    onepage_titles = []
+    onepage_urls = []
+
+    # 기사 제목 리스트
+    titles_urls = res.find(class_='list_news').find_all(class_='bx')
+    for j in range(len(titles_urls)):
+        all_titles.append(res.select_one('ul.list_news > li:nth-child(' + str(j + 1) + ') > div > div > a').text)
+        all_urls.append(res.select_one('ul.list_news > li:nth-child(' + str(j + 1) + ') > div > div > a.news_tit')['href'])
+    # 확인용
+    #     onepage_titles.append(res.select_one('ul.list_news > li:nth-child(' + str(j + 1) + ') > div > div > a').text)
+    #     onepage_urls.append(res.select_one('ul.list_news > li:nth-child(' + str(j + 1) + ') > div > div > a.news_tit')['href'])
+    # print('{} 페이지 기사 추가된 onepage_titles :'.format(i + 1), onepage_titles)
+    # print('{} 페이지 url 추가된 onepage_urls :'.format(i + 1), onepage_urls)
+
+    # print('마지막 리턴하는 총기사제목 all_titles : ', all_titles)
+    # print('마지막 리턴하는 총기사url all_urls : ', all_urls)
+    print('naver crawling Ok')
+    return all_titles, all_urls
+
+
+# def first_news_title():  # 프로그램 첫 실행시 첫 제목 바로 띄워주는 함수
+#     url = 'https://search.naver.com/search.naver?where=news&query=%EC%BD%94%EB%A1%9C%EB%82%98&start=1'
+#     web_page = urllib.request.urlopen(url)
+#     result = bs4.BeautifulSoup(web_page, 'html.parser')
+#
+#     first_title = result.find(class_='news_tit').text
+#     print('제목 : ', first_title)
+#     # first_url = result.find(class_='news_tit')['href']
+#     # print('url : ', first_url)
+#
+#     return first_title  # , first_url

@@ -9,7 +9,7 @@ dbUSER = "c##student"
 dbPASSWD = "student"
 
 
-def oracle_init():  # 애플리케이션 구동시 딱 한번 실행되어야 함
+def run():  # 애플리케이션 구동시 딱 한번 실행되어야 함
     cx_Oracle.init_oracle_client(lib_dir="C:\instantclient_21_3")
 
 
