@@ -11,6 +11,7 @@ def view():
 
 
 def hide():
+    start_frame.pack_forget()
     frame2.pack_forget()
     frame3.pack_forget()
     frame4.pack_forget()
@@ -183,7 +184,7 @@ def refresh(page=0, seoul_list=[], naver_list=[]):
             c = c + 1
 
     def reload_0():
-        refresh(0, request('seoul'), request('seoul'))
+        refresh(0, request('seoul'), request('naver'))
 
     def page_1():
         refresh(1, seoul_list, naver_list)
@@ -195,7 +196,7 @@ def refresh(page=0, seoul_list=[], naver_list=[]):
 
     def start_set(start):
         print(str(start) + 'page')
-        frame7.config(text=' 코로나 관련 뉴스 - 현재 [{}] 페이지'.format(start))
+        frame7.config(text=' 코로나 관련 뉴스 - 현재 [{}] 페이지'.format(start+1))
         refresh(1, seoul_list, request('naver', start))
 
     def reload_1():
@@ -298,32 +299,46 @@ def refresh(page=0, seoul_list=[], naver_list=[]):
 
         button = Button(button_frame, text='1', borderwidth=0)
         button.grid(row=0, column=1, padx=5)
-        button.config(command=lambda: start_set(1))
+        button.config(command=lambda: start_set(0))
         button = Button(button_frame, text='2', borderwidth=0)
         button.grid(row=0, column=2, padx=5)
-        button.config(command=lambda: start_set(2))
+        button.config(command=lambda: start_set(1))
         button = Button(button_frame, text='3', borderwidth=0)
         button.grid(row=0, column=3, padx=5)
-        button.config(command=lambda: start_set(3))
+        button.config(command=lambda: start_set(2))
         button = Button(button_frame, text='4', borderwidth=0)
         button.grid(row=0, column=4, padx=5)
-        button.config(command=lambda: start_set(4))
+        button.config(command=lambda: start_set(3))
         button = Button(button_frame, text='5', borderwidth=0)
         button.grid(row=0, column=5, padx=5)
-        button.config(command=lambda: start_set(5))
+        button.config(command=lambda: start_set(4))
         button = Button(button_frame, text='6', borderwidth=0)
         button.grid(row=0, column=6, padx=5)
-        button.config(command=lambda: start_set(6))
+        button.config(command=lambda: start_set(5))
         button = Button(button_frame, text='7', borderwidth=0)
         button.grid(row=0, column=7, padx=5)
-        button.config(command=lambda: start_set(7))
+        button.config(command=lambda: start_set(6))
         button = Button(button_frame, text='8', borderwidth=0)
         button.grid(row=0, column=8, padx=5)
-        button.config(command=lambda: start_set(8))
+        button.config(command=lambda: start_set(7))
         button = Button(button_frame, text='9', borderwidth=0)
         button.grid(row=0, column=8, padx=5)
-        button.config(command=lambda: start_set(9))
+        button.config(command=lambda: start_set(8))
 
+
+def start():
+    crawling.refresh('seoul', 0, entry_s2.get())
+    crawling.refresh('naver', 0, entry_s2.get())
+
+    frame1.pack()
+    button1_1.grid(row=0, column=0, padx=(28, 10), pady=(28, 12), sticky='w')
+    label1_1.grid(row=0, column=1, pady=(28, 12), sticky='we')
+    button1_2.grid(row=0, column=2, padx=(10, 28), pady=(28, 12), sticky='e')
+    button1_3.grid(row=1, column=0, columnspan=3, padx=(10, 28), sticky='e')
+    frame2.pack(expand=True, pady=(0, 15))
+    frame3.pack(pady=(0, 15))
+
+    refresh()
 
 tk = Tk()
 tk.title('corona')
@@ -334,25 +349,29 @@ master_frame = Frame(tk, width=600, height=400)
 master_frame.pack()
 
 
-frame1 = Frame(master_frame)
-frame1.pack()
+start_frame = Frame(master_frame)
+start_frame.pack()
 
+entry_s1 = Entry(start_frame, width=44)
+entry_s1.insert(0, 'https://www.seoul.go.kr/coronaV/coronaStatus.do')
+entry_s1.grid(row=0, column=0)
+entry_s2 = Entry(start_frame, width=44)
+entry_s2.insert(0, 'https://search.naver.com/search.naver?where=news&query=%EC%BD%94%EB%A1%9C%EB%82%98&start=01')
+entry_s2.grid(row=1, column=0)
+button_S = Button(start_frame, text='크롤링', command=start)
+button_S.grid(row=2, column=0)
+
+
+frame1 = Frame(master_frame)
 button1_1 = Button(frame1, width=6, text='새로고침', font=('', 10))
 label1_1 = Label(frame1, width=44, text='기사 제목', bg='white', relief='sunken')
 button1_2 = Button(frame1, width=6, font=('', 10))
 button1_3 = Button(frame1, width=9, text='코로나 달력', font=('', 10))
-button1_1.grid(row=0, column=0, padx=(28, 10), pady=(28, 12), sticky='w')
-label1_1.grid(row=0, column=1, pady=(28, 12), sticky='we')
-button1_2.grid(row=0, column=2, padx=(10, 28), pady=(28, 12), sticky='e')
-button1_3.grid(row=1, column=0, columnspan=3, padx=(10, 28), sticky='e')
-
 
 frame2 = LabelFrame(master_frame, text=' 서울시 코로나 발생동향 ', labelanchor='n', font=('', 12))
-frame2.pack(expand=True, pady=(0, 15))
 
 
 frame3 = LabelFrame(master_frame, text=' 대한민국 코로나 발생동향 ', labelanchor='n', font=('', 12))
-frame3.pack(pady=(0, 15))
 
 
 frame4 = LabelFrame(master_frame, text=' 지역별 신규 확진자 발생인원/비율 ', labelanchor='n', font=('', 12))
@@ -367,5 +386,4 @@ frame6 = LabelFrame(master_frame, text=' 날짜별 확진자 발생인원 ', lab
 frame7 = LabelFrame(master_frame, text=' 코로나 관련 뉴스 ', labelanchor='n', font=('', 12))
 
 
-refresh()
 tk.mainloop()

@@ -11,6 +11,8 @@ conn = cx_Oracle.connect("c##student/student@localhost:1521/xe")
 
 
 def database(list):
+    conn = cx_Oracle.connect("c##student/student@localhost:1521/xe")
+
     def select_count():
         query = 'select count(*) from covid'
         re = []
@@ -20,22 +22,6 @@ def database(list):
         for row in re:
             re = row[0]
         return re
-    seoul_num = list[0][0][0]
-    korea_num = list[0][1][0]
-
-    tuple_seoul_num = tuple(seoul_num)
-    tuple_korea_num = tuple(korea_num)
-
-    date = str(list[1][0])
-    date = date[3:11]
-    characters = "."
-    date = ''.join(x for x in date if x not in characters)
-    date = date[:2] + '/' + date[2:4] + '/' + date[4:]
-    tp_date = (date,)
-    tuple_result = tuple_seoul_num + tuple_korea_num + tp_date
-
-    query = """INSERT INTO COVID VALUES (TO_CHAR(sysdate, 'YY/MM/DD HH24:MI:SS'),:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12)"""
-    cursor = conn.cursor()
 
     def to_db():
         sysdate = """
@@ -53,6 +39,22 @@ def database(list):
             realdate = date_now[2:4] + '/' + date_now[5:7] + '/' + date_now[8:10]
         return realdate
 
+    seoul_num = list[0][0][0]
+    korea_num = list[0][1][0]
+
+    tuple_seoul_num = tuple(seoul_num)
+    tuple_korea_num = tuple(korea_num)
+
+    date = str(list[1][0])
+    date = date[3:11]
+    characters = "."
+    date = ''.join(x for x in date if x not in characters)
+    date = date[:2] + '/' + date[2:4] + '/' + date[4:]
+    tp_date = (date,)
+    tuple_result = tuple_seoul_num + tuple_korea_num + tp_date
+
+    query = """INSERT INTO COVID VALUES (TO_CHAR(sysdate, 'YY/MM/DD HH24:MI:SS'),:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12)"""
+    cursor = conn.cursor()
 
     # cursor.execute(query, tuple_result)
     if select_count() == 0:
@@ -62,6 +64,7 @@ def database(list):
             pass
         else:
             cursor.execute(query, tuple_result)
+    print('커서클로즈')
     cursor.close()
     conn.commit()
     conn.close()
