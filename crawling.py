@@ -19,7 +19,6 @@ def refresh(site, start=0, url=''):
     if site == 'naver' or site == 'all':
         if url == '':
             url = 'https://search.naver.com/search.naver?where=news&query=%EC%BD%94%EB%A1%9C%EB%82%98&start=' + str(start) + '1'
-            print(url)
         web_page = urllib.request.urlopen(url)
         result = bs4.BeautifulSoup(web_page, 'html.parser')
         return result

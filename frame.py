@@ -262,7 +262,6 @@ def refresh(page=0, seoul_list=[], naver_list=[]):
         for i in widget_list:
             i.destroy()
 
-        # 나중에 제대로
         label = Label(frame7, width=44, text=naver_list[0][0][:30], font=('', 12, 'underline'), fg='#287bde', bg='white', relief='sunken')
         label.grid(row=0, column=0, padx=69, pady=(10, 0))
         label.bind("<Button-1>", lambda e: callback(naver_list[1][0]))
@@ -322,7 +321,7 @@ def refresh(page=0, seoul_list=[], naver_list=[]):
         button.grid(row=0, column=8, padx=5)
         button.config(command=lambda: start_set(7))
         button = Button(button_frame, text='9', borderwidth=0)
-        button.grid(row=0, column=8, padx=5)
+        button.grid(row=0, column=9, padx=5)
         button.config(command=lambda: start_set(8))
 
 
@@ -354,10 +353,10 @@ start_frame.pack()
 
 entry_s1 = Entry(start_frame, width=44)
 entry_s1.insert(0, 'https://www.seoul.go.kr/coronaV/coronaStatus.do')
-entry_s1.grid(row=0, column=0)
+entry_s1.grid(row=0, column=0, pady=(150, 0))
 entry_s2 = Entry(start_frame, width=44)
 entry_s2.insert(0, 'https://search.naver.com/search.naver?where=news&query=%EC%BD%94%EB%A1%9C%EB%82%98&start=01')
-entry_s2.grid(row=1, column=0)
+entry_s2.grid(row=1, column=0, pady=(0, 10))
 button_S = Button(start_frame, text='크롤링', command=start)
 button_S.grid(row=2, column=0)
 

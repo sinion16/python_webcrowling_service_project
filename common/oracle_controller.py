@@ -64,7 +64,6 @@ def database(list):
             pass
         else:
             cursor.execute(query, tuple_result)
-    print('커서클로즈')
     cursor.close()
     conn.commit()
     conn.close()
