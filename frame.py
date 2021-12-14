@@ -195,7 +195,7 @@ def refresh(page=0, seoul_list=[], naver_list=[]):
         webbrowser.open_new(url)
 
     def start_set(start):
-        print(str(start) + 'page')
+        print(str(start+1) + 'page')
         frame7.config(text=' 코로나 관련 뉴스 - 현재 [{}] 페이지'.format(start+1))
         refresh(1, seoul_list, request('naver', start))
 
